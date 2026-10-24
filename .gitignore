@@ -176,3 +176,9 @@ cython_debug/
 # Firebase Studio
 .idx/.data
 .vscode/
+
+# Local test runtime and application data
+.tools/
+uploads/
+.env.*
+!.env.example

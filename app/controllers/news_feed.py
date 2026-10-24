@@ -1,41 +1,22 @@
-from flask import Blueprint, request
-from app import db
-from app.utils  import api_response, token_required
-from app.models.post import Post
+from flask import Blueprint
+
+from app.extensions import db
 from app.models.follow import Follow
+from app.models.post import Post
+from app.utils import api_response, paginated_data, pagination_args, token_required
 
-from app.controllers.user import user_bp 
-from app.controllers.post import post_bp 
+
+news_feed_bp = Blueprint('news_feed', __name__)
 
 
-# UC13: View news feed
-@post_bp.route('/newsfeed', methods=['GET'])
+@news_feed_bp.route('/newsfeed', methods=['GET'])
 @token_required
 def view_news_feed(current_user):
-    # Get pagination parameters from query string
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
-
-    # Get posts from database with pagination
-    current_user_id = current_user.id
-    followed_records = Follow.query.filter_by(follower_id=current_user_id).all()
-    followed_ids = [f.following_id for f in followed_records]
-    followed_ids.append(current_user_id)
-
+    page, per_page = pagination_args()
+    followed_ids = db.select(Follow.following_id).where(Follow.follower_id == current_user.id)
     posts = Post.query.filter(
-        Post.user_id.in_(followed_ids), # Only retrieve posts of current user from the list
-        Post.deleted == False # Still filter deleted posts
-    ).order_by(Post.created_at.desc())\
-     .paginate(page=page, per_page=per_page, error_out=False)
-
-    # Prepare response data
-    response_data = {
-        'items': [post.to_dict() for post in posts.items],
-        'pagination': {
-            'page': posts.page,
-            'per_page': posts.per_page,
-            'total': posts.total,
-        }
-    }
-
-    return api_response(data=response_data)
+        Post.deleted.is_(False),
+        db.or_(Post.user_id == current_user.id, Post.user_id.in_(followed_ids)),
+    ).order_by(Post.created_at.desc(), Post.id.desc()).paginate(
+        page=page, per_page=per_page, error_out=False, max_per_page=100)
+    return api_response(data=paginated_data(posts, lambda post: post.to_dict(include_user=True)))

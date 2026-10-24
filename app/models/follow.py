@@ -1,14 +1,17 @@
-from datetime import datetime
-from app import db
+from time import time
+
+from app.extensions import db
+
 
 class Follow(db.Model):
-    """Model for follow feature between users."""
     __tablename__ = 'follows'
+    __table_args__ = (db.Index('ix_follows_following_id', 'following_id'),)
 
-    follower_id = db.Column('follower_id', db.Integer, primary_key=True)
-    # ID of the user being followed
-    following_id = db.Column('following_id', db.Integer, primary_key=True)
-    created_at = db.Column('created_at', db.Integer, default=lambda: int(datetime.now().timestamp()))
+    follower_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE'), primary_key=True)
+    following_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE'), primary_key=True)
+    created_at = db.Column(db.Integer, default=lambda: int(time()))
 
     def __repr__(self):
-        return f' {self.following_id}>'
+        return f'<Follow {self.follower_id} -> {self.following_id}>'

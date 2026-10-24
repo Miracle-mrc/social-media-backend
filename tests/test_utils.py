@@ -1,13 +1,14 @@
 import unittest
 from app.utils import allowed_file
 
+
 class TestUtils(unittest.TestCase):
     # Test case 1: Valid extension, lowercase
     def test_allowed_extension_lower(self):
         self.assertTrue(allowed_file("image.jpg"), "Test failed for image.jpg")
         self.assertTrue(allowed_file("photo.png"), "Test failed for photo.png")
         self.assertTrue(allowed_file("animation.gif"), "Test failed for animation.gif")
-        self.assertTrue(allowed_file("picture.jpeg"), "Test failed for picture.jpeg")        
+        self.assertTrue(allowed_file("picture.jpeg"), "Test failed for picture.jpeg")
 
     # Test case 2: Valid extension, uppercase/mixed
     def test_allowed_extension_upper(self):
@@ -28,8 +29,8 @@ class TestUtils(unittest.TestCase):
     def test_multiple_dots(self):
         self.assertTrue(allowed_file("image.backup.jpg"), "Test failed for image.backup.jpg")
         self.assertFalse(allowed_file("archive.tar.gz"), "Test failed for archive.tar.gz")
-        self.assertTrue(allowed_file("photo.old.png"), "Test failed for photo.old.png")    
-    
+        self.assertTrue(allowed_file("photo.old.png"), "Test failed for photo.old.png")
+
     # Test case 5: Filename without extension
     def test_no_extension(self):
         self.assertFalse(allowed_file("myfile"), "Test failed for 'myfile'")
@@ -45,12 +46,14 @@ class TestUtils(unittest.TestCase):
     def test_hidden_file(self):
         # Extension defined by 'bashrc', invalid
         self.assertFalse(allowed_file(".bashrc"), "Test failed for '.bashrc'")
-        self.assertFalse(allowed_file(".gitconfig"), "Test failed for '.gitconfig'")     
+        self.assertFalse(allowed_file(".gitconfig"), "Test failed for '.gitconfig'")
 
     # Test case 8: Empty filename or filename with only dot
     def test_empty_or_dot_filename(self):
         self.assertFalse(allowed_file(""), "Test failed for empty string")
         self.assertFalse(allowed_file("."), "Test failed for '.'")
+
+
 # Allow test file runs directly
 if __name__ == '__main__':
-    unittest.main()   
+    unittest.main()

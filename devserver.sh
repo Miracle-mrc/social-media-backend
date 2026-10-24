@@ -1,6 +1,8 @@
 #!/bin/sh
-source .venv/bin/activate
-export NAME=Hung
-# export DATABASE_URL=mysql+pymysql://root:@localhost:3306/tralalerotralala
-export DATABASE_URL=mysql+pymysql://root:hungdeptrai@35.221.136.148:3306/tralalerotralala
-python -m flask --app main run --debug
+set -eu
+cd "$(dirname "$0")"
+if [ -f .venv/bin/activate ]; then
+    . .venv/bin/activate
+fi
+# Flask loads local .env settings when python-dotenv is installed.
+python -m flask --app main run --debug --host 127.0.0.1 --port "${PORT:-5000}"

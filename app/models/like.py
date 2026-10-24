@@ -1,12 +1,15 @@
-from datetime import datetime
-from app import db
+from time import time
+
+from app.extensions import db
+
 
 class Like(db.Model):
-    """Model cho chức năng thích (like) của người dùng."""
     __tablename__ = 'likes'
-    user_id = db.Column('user_id', db.Integer, primary_key=True, nullable=False)
-    post_id = db.Column('post_id', db.Integer, primary_key=True, nullable=False)
-    created_at = db.Column('created_at', db.Integer, nullable=False, default=lambda: int(datetime.now().timestamp()))
+    __table_args__ = (db.Index('ix_likes_post_id', 'post_id'),)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id', ondelete='CASCADE'), primary_key=True)
+    created_at = db.Column(db.Integer, default=lambda: int(time()), nullable=False)
 
     def __repr__(self):
-        return f''
+        return f'<Like user={self.user_id} post={self.post_id}>'

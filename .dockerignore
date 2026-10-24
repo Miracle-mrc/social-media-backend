@@ -1,0 +1,14 @@
+.git
+.venv
+.tools
+__pycache__
+*.pyc
+.env
+.env.*
+!.env.example
+instance
+uploads
+tests
+.pytest_cache
+*.pem
+*service-account*.json
